@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CheckCircle, Brain, Heart, Award } from "lucide-react";
+import { CheckCircle, Brain, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 interface ResultData {
   name: string;
@@ -12,11 +12,11 @@ interface ResultData {
   scores: { [key: string]: number };
   date: string;
   description?: string;
+  status?: string;
 }
 
 const TestResult = () => {
   const [result, setResult] = useState<ResultData | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { testType, resultId } = useParams<{
@@ -26,6 +26,14 @@ const TestResult = () => {
   const { toast } = useToast();
 
   const API_BASE_URL = "http://localhost:5000/api";
+
+  const profileNameMap: Record<string, string> = {
+    Words: "Palavras de Afirmação",
+    Acts: "Atos de Serviço",
+    Gifts: "Presentes",
+    Time: "Tempo de Qualidade",
+    Touch: "Toque Físico",
+  };
 
   const testMetadata = {
     disc: {
@@ -71,25 +79,13 @@ const TestResult = () => {
         const endpoint =
           testType === "disc"
             ? `disc/result/${resultId}`
-            : `love-languages/report/${resultId}`;
+            : `love-languages/result/${resultId}`;
+
         const res = await fetch(`${API_BASE_URL}/${endpoint}`);
-
         if (!res.ok) throw new Error("Erro ao buscar resultado");
-        const contentType = res.headers.get("content-type");
 
-        if (contentType?.includes("pdf")) {
-          const blob = await res.blob();
-          const url = URL.createObjectURL(blob);
-          setPdfUrl(url);
-          setResult({
-            name: "Desconhecido",
-            scores: {},
-            date: new Date().toISOString(),
-          });
-        } else {
-          const data = await res.json();
-          setResult(data);
-        }
+        const data = await res.json();
+        setResult(data);
       } catch (e: any) {
         setError(e.message);
         toast({
@@ -104,18 +100,25 @@ const TestResult = () => {
     fetchData();
   }, [testType, resultId]);
 
-  if (loading)
+  if (loading) {
     return (
       <div className="h-screen flex items-center justify-center">
         Carregando...
       </div>
     );
-  if (error || !result || !testMetadata[testType as keyof typeof testMetadata])
+  }
+
+  if (
+    error ||
+    !result ||
+    !testMetadata[testType as keyof typeof testMetadata]
+  ) {
     return (
       <div className="h-screen flex items-center justify-center text-red-600">
         {error || "Erro"}
       </div>
     );
+  }
 
   const meta = testMetadata[testType as keyof typeof testMetadata];
   const Icon = meta.icon;
@@ -174,9 +177,10 @@ const TestResult = () => {
               <div className="space-y-2">
                 {Object.entries(result.scores).map(([k, v]) => {
                   const pct = total ? Math.round((v / total) * 100) : 0;
+                  const translated = profileNameMap[k] || k;
                   return (
                     <div key={k} className="flex items-center gap-2">
-                      <span className="w-24 capitalize">{k}</span>
+                      <span className="w-40">{translated}</span>
                       <div className="flex-1 h-2 bg-gray-200 rounded">
                         <div
                           className={`h-full bg-gradient-to-r ${meta.color} rounded`}
@@ -190,22 +194,12 @@ const TestResult = () => {
               </div>
             </div>
 
-            {/* {pdfUrl && (
-              <div className="text-center mt-4">
-                <Button asChild size="sm">
-                  <a href={pdfUrl} download={`resultado_${testType}_${resultId}.pdf`}>
-                    Baixar PDF
-                  </a>
-                </Button>
-              </div>
-            )} */}
-
             <div className="mt-6 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded text-center">
               <h4 className="font-medium text-gray-800 mb-1 sm:text-lg">
                 Obrigado por participar!
               </h4>
               <p className="text-gray-600 text-sm sm:text-base">
-                Agora cadastre seu curriculo em nosso banco de bla bla bla
+                Agora cadastre seu currículo em nosso banco de bla bla bla
               </p>
             </div>
           </CardContent>

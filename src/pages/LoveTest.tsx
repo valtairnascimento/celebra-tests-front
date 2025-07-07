@@ -111,7 +111,7 @@ const LoveTest = () => {
         title: "Teste concluído!",
         description: `Sua linguagem principal: ${data.primaryLanguage}`,
       });
-      navigate(`/resultado/love/${data.resultId}`);
+      navigate(`/resultado/love-languages/${data.resultId}`);
     } catch (err: any) {
       toast({
         title: "Erro ao submeter teste",
