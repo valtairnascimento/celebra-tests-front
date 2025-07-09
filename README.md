@@ -1,73 +1,109 @@
-# Welcome to your Lovable project
+# 🎭 Celebra Tests Front
 
-## Project info
+**Interface Web para Aplicação de Testes de Personalidade**  
+Projeto desenvolvido com foco em acessibilidade, responsividade e experiência de usuário, permitindo a realização de testes de perfil de maneira fluida e intuitiva.
 
-**URL**: https://lovable.dev/projects/fbee16a1-61e9-4594-8e82-5094ecd3527d
+---
 
-## How can I edit this code?
+## 🚀 Visão Geral
 
-There are several ways of editing your application.
+Este repositório contém o front-end do **Celebra Tests**, uma aplicação que permite a usuários responderem testes de personalidade e receberem resultados personalizados com base em seus perfis. A proposta é oferecer uma experiência leve, visualmente agradável e de fácil integração com um backend de processamento de resultados.
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/fbee16a1-61e9-4594-8e82-5094ecd3527d) and start prompting.
+## 🧩 Funcionalidades
 
-Changes made via Lovable will be committed automatically to this repo.
+- 📄 Exibição dinâmica de perguntas e alternativas
+- 🧠 Coleta e estruturação de respostas do usuário
+- 🎯 Exibição de resultados ao final do teste
+- 🖥️ Layout responsivo para diferentes dispositivos
+- 🌐 Configurável para múltiplos tipos de testes
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🛠️ Tecnologias Utilizadas
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **React** (Vite)
+- **TypeScript**
+- **TailwindCSS** (design utilitário e responsividade)
+- **React Router** (navegação entre páginas)
+- **Zod** (validação de dados)
+- **Axios** (requisições HTTP)
+- **Phosphor Icons** (ícones)
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 📦 Estrutura do Projeto
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+```
+celebra-tests-front/
+├── public/
+├── src/
+│   ├── assets/            # Ícones, imagens, fontes
+│   ├── components/        # Componentes reutilizáveis (Header, Button, etc.)
+│   ├── pages/             # Páginas principais (Home, Test, Result, etc.)
+│   ├── routes/            # Definições de rotas
+│   ├── services/          # Integração com APIs
+│   ├── utils/             # Funções auxiliares
+│   ├── types/             # Tipagens globais
+│   └── App.tsx
+├── tailwind.config.ts
+├── tsconfig.json
+├── vite.config.ts
+└── README.md
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## 🧪 Como Rodar Localmente
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/valtairnascimento/celebra-tests-front.git
+
+# 2. Acesse a pasta do projeto
+cd celebra-tests-front
+
+# 3. Instale as dependências
+npm install
+
+# 4. Inicie o servidor local
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+O projeto estará disponível em `http://localhost:3000`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 📍 Exemplo de Uso
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. Acesse a aplicação
+2. Escolha um teste de personalidade
+3. Responda às perguntas de forma intuitiva
+4. Visualize o resultado com base em seu perfil
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## 🤝 Contribuindo
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Sinta-se à vontade para contribuir com melhorias, correções de bugs, novos testes ou sugestões de interface.  
+Basta seguir os passos:
 
-## How can I deploy this project?
+1. Faça um fork do projeto
+2. Crie uma branch com sua feature (`git checkout -b minha-feature`)
+3. Commit suas alterações (`git commit -m 'feat: nova feature'`)
+4. Envie um push para sua branch (`git push origin minha-feature`)
+5. Abra um Pull Request
 
-Simply open [Lovable](https://lovable.dev/projects/fbee16a1-61e9-4594-8e82-5094ecd3527d) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
+## 📄 Licença
 
-Yes, you can!
+Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](./LICENSE) para mais detalhes.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## ✨ Desenvolvido por
+
+[Valtair Nascimento](https://github.com/valtairnascimento) com ♥  
+Para fins educacionais, experimentais e aprimoramento de aplicações de testes de personalidade.
