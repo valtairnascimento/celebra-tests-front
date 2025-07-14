@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, FileText, Users } from "lucide-react";
 import TestTable from "@/components/TestTable";
-import CreateTestModal from "@/components/CreateTestModal";
+import GenerateLinkModal from "@/components/GenerateLinkModal";
 
 const Dashboard = () => {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [activeTestType, setActiveTestType] = useState<"disc" | "love">("disc");
   const [metrics, setMetrics] = useState({
     totalUsers: 0,
@@ -17,7 +17,6 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
   const API_BASE_URL = "http://localhost:5000/api";
 
   useEffect(() => {
@@ -57,7 +56,7 @@ const Dashboard = () => {
               <Button
                 onClick={() => {
                   setActiveTestType("disc");
-                  setIsCreateModalOpen(true);
+                  setIsGenerateModalOpen(true);
                 }}
                 className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
                 disabled={loading}
@@ -68,7 +67,7 @@ const Dashboard = () => {
               <Button
                 onClick={() => {
                   setActiveTestType("love");
-                  setIsCreateModalOpen(true);
+                  setIsGenerateModalOpen(true);
                 }}
                 className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
                 disabled={loading}
@@ -156,11 +155,12 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <CreateTestModal
-          isOpen={isCreateModalOpen}
-          onClose={() => setIsCreateModalOpen(false)}
+        <GenerateLinkModal
+          isOpen={isGenerateModalOpen}
+          onClose={() => setIsGenerateModalOpen(false)}
           testType={activeTestType}
         />
+
         {error && (
           <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
             Erro: {error}

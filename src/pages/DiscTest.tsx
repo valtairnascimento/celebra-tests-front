@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ChevronRight, Brain } from "lucide-react";
-import { useParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import UserInfoModal from "@/components/UserInfoModal";
 
 interface Question {
   _id: string;
@@ -17,11 +18,13 @@ interface Question {
 const DiscTest = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<{ [key: string]: number }>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [testName, setTestName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showUserModal, setShowUserModal] = useState(false);
+
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -31,44 +34,29 @@ const DiscTest = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       if (!token) {
-        setError("Token não fornecido na URL");
+        setError("Token não fornecido");
         setLoading(false);
-        toast({
-          title: "Erro",
-          description: "Token não fornecido na URL",
-          variant: "destructive",
-        });
         return;
       }
 
-      setLoading(true);
-      setError(null);
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/disc/questions?token=${token}`
-        );
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Erro ao carregar perguntas");
+        const questionsRes = await fetch(`${API_BASE_URL}/disc/questions?token=${token}`);
+        if (!questionsRes.ok) throw new Error("Erro ao carregar perguntas");
+        const questionsData = await questionsRes.json();
+        setQuestions(questionsData);
+
+        const linkRes = await fetch(`${API_BASE_URL}/disc/test-link?token=${token}`);
+        if (!linkRes.ok) throw new Error("Erro ao buscar informações do teste");
+        const linkData = await linkRes.json();
+
+        setTestName(linkData.testName || "");
+        if (!linkData.testName) {
+          setShowUserModal(true);
         }
-
-        const data = await response.json();
-        setQuestions(data);
-
-        const testLinkResponse = await fetch(
-          `${API_BASE_URL}/disc/test-link?token=${token}`
-        );
-        if (!testLinkResponse.ok) {
-          const errorData = await testLinkResponse.json();
-          throw new Error(errorData.error || "Erro ao buscar nome do teste");
-        }
-
-        const { testName } = await testLinkResponse.json();
-        setTestName(testName || "DISC");
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
         toast({
-          title: "Erro ao carregar teste",
+          title: "Erro",
           description: err.message,
           variant: "destructive",
         });
@@ -80,9 +68,37 @@ const DiscTest = () => {
     fetchQuestions();
   }, [token]);
 
-  const totalQuestions = questions.length || 0;
-  const progress =
-    totalQuestions > 0 ? ((currentQuestion + 1) / totalQuestions) * 100 : 0;
+  const handleUserInfoSubmit = async ({
+    name,
+    email,
+    phone,
+  }: {
+    name: string;
+    email: string;
+    phone: string;
+  }) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/disc/update-user-info`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, name, email, phone }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Erro ao salvar dados do usuário");
+      }
+
+      setTestName(name);
+      setShowUserModal(false);
+    } catch (err) {
+      toast({
+        title: "Erro ao salvar dados",
+        description: (err as Error).message,
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleAnswerChange = (value: string) => {
     setAnswers((prev) => ({
@@ -92,7 +108,7 @@ const DiscTest = () => {
   };
 
   const handleNext = () => {
-    if (currentQuestion < totalQuestions - 1) {
+    if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
     } else {
       handleSubmit();
@@ -100,20 +116,11 @@ const DiscTest = () => {
   };
 
   const handleSubmit = async () => {
-    if (!token) {
-      toast({
-        title: "Erro",
-        description:
-          "Token não fornecido. Por favor, acesse o teste com um link válido.",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!token) return;
 
-    if (Object.keys(answers).length !== totalQuestions) {
+    if (Object.keys(answers).length !== questions.length) {
       toast({
-        title: "Erro",
-        description: "Por favor, responda todas as perguntas antes de enviar.",
+        title: "Responda todas as perguntas",
         variant: "destructive",
       });
       return;
@@ -122,12 +129,12 @@ const DiscTest = () => {
     setIsSubmitting(true);
     try {
       const payload = {
+        token,
+        name: testName || "Anônimo",
         answers: Object.entries(answers).map(([questionId, value]) => ({
           questionId,
           value,
         })),
-        name: testName,
-        token,
       };
 
       const response = await fetch(`${API_BASE_URL}/disc/submit`, {
@@ -141,14 +148,13 @@ const DiscTest = () => {
         throw new Error(errorData.error || "Erro ao submeter teste");
       }
 
-      const { resultId, profile } = await response.json();
+      const data = await response.json();
       toast({
-        title: "Teste concluído!",
-        description: `Seu perfil principal: ${profile}`,
+        title: "Teste concluído",
+        description: `Seu perfil: ${data.profile}`,
       });
-      navigate(`/resultado/disc/${resultId}`);
-    } catch (err) {
-      setError(err.message);
+      navigate(`/resultado/disc/${data.resultId}`);
+    } catch (err: any) {
       toast({
         title: "Erro ao submeter teste",
         description: err.message,
@@ -159,20 +165,18 @@ const DiscTest = () => {
     }
   };
 
-  const canProceed = answers[questions[currentQuestion]?._id] !== undefined;
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Carregando teste...</p>
+        Carregando...
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="p-4 bg-red-100 text-red-700 rounded">Erro: {error}</div>
+      <div className="min-h-screen flex items-center justify-center text-red-600">
+        {error}
       </div>
     );
   }
@@ -180,88 +184,60 @@ const DiscTest = () => {
   if (questions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>
-          Nenhuma pergunta disponível. Por favor, verifique o token ou contate o
-          suporte.
-        </p>
+        Nenhuma pergunta disponível.
       </div>
     );
   }
 
+  const progress = ((currentQuestion + 1) / questions.length) * 100;
+  const canProceed = answers[questions[currentQuestion]?._id] !== undefined;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
       <div className="container mx-auto px-4 py-6">
-        {/* Header */}
         <div className="text-center mb-6">
           <div className="flex items-center justify-center mb-3">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-2 rounded-full">
+            <div className="bg-blue-600 p-2 rounded-full">
               <Brain className="h-6 w-6 text-white" />
             </div>
           </div>
           <h1 className="text-2xl font-bold text-gray-800 mb-1">
-            Teste DISC - {testName || "Anônimo"}
+            Teste DISC - {testName || "Participante"}
           </h1>
-          <p className="text-gray-600 text-sm max-w-xl mx-auto">
-            Descubra seu perfil comportamental e como você se relaciona com o
-            mundo ao seu redor.
+          <p className="text-gray-600 text-sm">
+            Descubra seu perfil comportamental.
           </p>
         </div>
 
-        {/* Progress */}
         <div className="max-w-xl mx-auto mb-6">
-          <div className="flex items-center justify-between mb-1 text-xs text-gray-600">
+          <div className="flex justify-between text-sm text-gray-600 mb-1">
             <span>
-              Pergunta {currentQuestion + 1} de {totalQuestions}
+              Pergunta {currentQuestion + 1} de {questions.length}
             </span>
             <span className="text-blue-600">
               {Math.round(progress)}% concluído
             </span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} />
         </div>
 
-        {/* Question Card */}
-        <Card className="max-w-xl mx-auto shadow-md text-sm">
-          <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-md p-4">
-            <CardTitle className="text-base">
-              {questions[currentQuestion]?.text}
-            </CardTitle>
+        <Card className="max-w-xl mx-auto">
+          <CardHeader className="bg-blue-600 text-white rounded-t p-4">
+            <CardTitle className="text-base">{questions[currentQuestion].text}</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 sm:p-5">
+          <CardContent className="p-4 space-y-3">
             <RadioGroup
-              value={answers[questions[currentQuestion]?._id]?.toString() || ""}
+              value={answers[questions[currentQuestion]._id]?.toString() || ""}
               onValueChange={handleAnswerChange}
-              className="space-y-3"
             >
-              {[1, 2, 3, 4, 5].map((value) => (
+              {[1, 2, 3, 4, 5].map((v) => (
                 <div
-                  key={value}
-                  className="flex items-center space-x-3 p-3 rounded border hover:bg-gray-50 transition-colors"
+                  key={v}
+                  className="flex items-center space-x-3 p-3 border rounded hover:bg-gray-50"
                 >
-                  <RadioGroupItem
-                    value={value.toString()}
-                    id={`value-${value}`}
-                  />
-                  <Label
-                    htmlFor={`value-${value}`}
-                    className="flex-1 cursor-pointer"
-                  >
-                    {(() => {
-                      switch (value) {
-                        case 1:
-                          return "Discordo totalmente";
-                        case 2:
-                          return "Discordo";
-                        case 3:
-                          return "Neutro";
-                        case 4:
-                          return "Concordo";
-                        case 5:
-                          return "Concordo totalmente";
-                        default:
-                          return "";
-                      }
-                    })()}
+                  <RadioGroupItem value={v.toString()} id={`option-${v}`} />
+                  <Label htmlFor={`option-${v}`} className="flex-1 cursor-pointer">
+                    {["Discordo totalmente", "Discordo", "Neutro", "Concordo", "Concordo totalmente"][v - 1]}
                   </Label>
                 </div>
               ))}
@@ -269,7 +245,6 @@ const DiscTest = () => {
           </CardContent>
         </Card>
 
-        {/* Navigation */}
         <div className="max-w-xl mx-auto mt-6 flex justify-between">
           <Button
             variant="outline"
@@ -278,24 +253,26 @@ const DiscTest = () => {
           >
             Anterior
           </Button>
-
           <Button
             onClick={handleNext}
             disabled={!canProceed || isSubmitting}
-            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+            className="bg-blue-600 hover:bg-blue-700"
           >
-            {isSubmitting ? (
-              "Processando..."
-            ) : currentQuestion === totalQuestions - 1 ? (
-              "Finalizar Teste"
-            ) : (
-              <>
-                Próxima <ChevronRight className="ml-2 h-4 w-4" />
-              </>
-            )}
+            {isSubmitting
+              ? "Enviando..."
+              : currentQuestion === questions.length - 1
+              ? "Finalizar Teste"
+              : (
+                  <>
+                    Próxima <ChevronRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
           </Button>
         </div>
       </div>
+
+      {/* Modal de dados do usuário */}
+      <UserInfoModal isOpen={showUserModal} onSubmit={handleUserInfoSubmit} />
     </div>
   );
 };
