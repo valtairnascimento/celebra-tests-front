@@ -35,10 +35,27 @@ const TestResult = () => {
     Touch: "Toque Físico",
   };
 
+  // Cores específicas para cada perfil DISC
+  const discColors: Record<string, string> = {
+    Dominante: "from-red-600 to-red-700",
+    Influente: "from-yellow-500 to-orange-500",
+    Estável: "from-green-600 to-green-700",
+    Consciente: "from-blue-600 to-blue-700",
+  };
+
+  // Cores específicas para cada linguagem do amor
+  const loveLanguageColors: Record<string, string> = {
+    "Palavras de Afirmação": "from-purple-500 to-purple-600",
+    "Atos de Serviço": "from-blue-500 to-blue-600",
+    Presentes: "from-pink-500 to-pink-600",
+    "Tempo de Qualidade": "from-emerald-500 to-emerald-600",
+    "Toque Físico": "from-rose-500 to-rose-600",
+  };
+
   const testMetadata = {
     disc: {
       icon: Brain,
-      color: "from-red-500 to-red-600",
+      color: (profile: string) => discColors[profile] || "from-gray-500 to-gray-600",
       description: (p: string) => `Você é predominantemente ${p}.`,
       characteristics: (p: string) =>
         ({
@@ -50,7 +67,7 @@ const TestResult = () => {
     },
     "love-languages": {
       icon: Heart,
-      color: "from-purple-500 to-pink-500",
+      color: (profile: string) => loveLanguageColors[profile] || "from-gray-500 to-gray-600",
       description: (p: string) => `Sua linguagem principal é ${p}.`,
       characteristics: (p: string) =>
         ({
@@ -124,6 +141,7 @@ const TestResult = () => {
   const Icon = meta.icon;
   const profile = result.profile || result.primaryLanguage || "Desconhecido";
   const total = Object.values(result.scores).reduce((a, b) => a + b, 0);
+  const headerColor = meta.color(profile);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -140,7 +158,7 @@ const TestResult = () => {
 
         <Card className="text-sm">
           <CardHeader
-            className={`bg-gradient-to-r ${meta.color} text-white p-3`}
+            className={`bg-gradient-to-r ${headerColor} text-white p-3`}
           >
             <div className="flex justify-center mb-1">
               <Icon className="w-6 h-6" />
@@ -164,7 +182,7 @@ const TestResult = () => {
                 {meta.characteristics(profile).map((c, i) => (
                   <li key={i} className="flex items-center">
                     <div
-                      className={`w-2 h-2 rounded-full mr-2 bg-gradient-to-r ${meta.color}`}
+                      className={`w-2 h-2 rounded-full mr-2 bg-gradient-to-r ${headerColor}`}
                     />
                     {c}
                   </li>
@@ -183,7 +201,7 @@ const TestResult = () => {
                       <span className="w-40">{translated}</span>
                       <div className="flex-1 h-2 bg-gray-200 rounded">
                         <div
-                          className={`h-full bg-gradient-to-r ${meta.color} rounded`}
+                          className={`h-full bg-gradient-to-r ${headerColor} rounded`}
                           style={{ width: `${pct}%` }}
                         />
                       </div>
