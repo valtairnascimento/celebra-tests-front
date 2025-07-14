@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import DiscTest from "./pages/DiscTest";
 import LoveTest from "./pages/LoveTest";
 import TestResult from "./pages/TestResult";
+import ResumeEnhancer from "./pages/ResumeEnhancer";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +24,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/test/disc/:token" element={<DiscTest />} />
           <Route path="/test/love-languages/:token" element={<LoveTest />} />
+          <Route path="/resume-enhancer" element={<ResumeEnhancer />} />
           <Route
             path="/resultado/:testType/:resultId"
             element={<TestResult />}
