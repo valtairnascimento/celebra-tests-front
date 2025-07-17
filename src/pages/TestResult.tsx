@@ -35,7 +35,6 @@ const TestResult = () => {
     Touch: "Toque Físico",
   };
 
-  // Cores específicas para cada perfil DISC
   const discColors: Record<string, string> = {
     Dominante: "from-red-600 to-red-700",
     Influente: "from-yellow-500 to-orange-500",
@@ -43,7 +42,6 @@ const TestResult = () => {
     Consciente: "from-blue-600 to-blue-700",
   };
 
-  // Cores específicas para cada linguagem do amor
   const loveLanguageColors: Record<string, string> = {
     "Palavras de Afirmação": "from-purple-500 to-purple-600",
     "Atos de Serviço": "from-blue-500 to-blue-600",

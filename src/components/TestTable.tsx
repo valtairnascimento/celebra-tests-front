@@ -28,7 +28,6 @@ const TestTable: React.FC<TestTableProps> = ({ testType }) => {
 
   const API_BASE_URL = "http://localhost:5000/api";
 
-  // Cores padrão do teste DISC
   const getDiscColor = (profile: string): string => {
     if (!profile || typeof profile !== 'string') return 'bg-gray-600';
     
@@ -39,10 +38,9 @@ const TestTable: React.FC<TestTableProps> = ({ testType }) => {
     if (profileLower.includes('estável')) return 'bg-green-600';
     if (profileLower.includes('consciente')) return 'bg-blue-600';
     
-    return 'bg-gray-600'; // cor padrão
+    return 'bg-gray-600'; 
   };
 
-  // Cores para Love Languages
   const getLoveLanguageColor = (profile: string): string => {
     if (!profile || typeof profile !== 'string') return 'bg-gray-600';
     
@@ -54,10 +52,9 @@ const TestTable: React.FC<TestTableProps> = ({ testType }) => {
     if (profileLower.includes('tempo de qualidade')) return 'bg-orange-600';
     if (profileLower.includes('toque físico')) return 'bg-pink-600';
     
-    return 'bg-gray-600'; // cor padrão
+    return 'bg-gray-600'; 
   };
 
-  // Função para obter a cor do badge baseada no tipo de teste
   const getBadgeColor = (profile: string): string => {
     if (!profile || typeof profile !== 'string') return 'bg-gray-600';
     
@@ -69,8 +66,6 @@ const TestTable: React.FC<TestTableProps> = ({ testType }) => {
   };
 
   const showToast = (title: string, description: string, variant: string = "default") => {
-    // Simulação de toast para demonstração
-    // console.log(`Toast: ${title} - ${description} (${variant})`);
   };
 
   useEffect(() => {
@@ -137,7 +132,6 @@ const TestTable: React.FC<TestTableProps> = ({ testType }) => {
 
   return (
     <div className="space-y-4 p-4">
-      {/* Filtros */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div className="flex flex-1 gap-2">
           <div className="relative flex-1 max-w-sm">
@@ -166,14 +160,12 @@ const TestTable: React.FC<TestTableProps> = ({ testType }) => {
         </div>
       </div>
 
-      {/* Mensagem de erro */}
       {error && (
         <div className="p-4 bg-red-100 text-red-700 rounded border border-red-300">
           <strong>Erro:</strong> {error}
         </div>
       )}
 
-      {/* Tabela */}
       <div className="rounded-md border border-gray-200 overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50">
@@ -251,7 +243,6 @@ const TestTable: React.FC<TestTableProps> = ({ testType }) => {
         </table>
       </div>
 
-      {/* Paginação */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center space-x-2">
           <button

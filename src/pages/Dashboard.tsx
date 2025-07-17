@@ -43,7 +43,6 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto p-6">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
@@ -79,7 +78,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -125,7 +123,6 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Main Content with Tabs */}
         <Card className="shadow-lg">
           <CardContent className="p-6">
             <Tabs defaultValue="disc" className="w-full">

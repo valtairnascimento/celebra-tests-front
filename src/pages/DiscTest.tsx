@@ -271,7 +271,6 @@ const DiscTest = () => {
         </div>
       </div>
 
-      {/* Modal de dados do usuário */}
       <UserInfoModal isOpen={showUserModal} onSubmit={handleUserInfoSubmit} />
     </div>
   );
